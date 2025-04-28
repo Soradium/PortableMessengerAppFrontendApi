@@ -39,6 +39,7 @@ const validateToken = (token) => {
         }
     };
 
+
     return (
       <div className="container-fluid vh-100">
         <div className="row vh-100">
@@ -73,3 +74,5 @@ const validateToken = (token) => {
     );
     
 }
+
+
