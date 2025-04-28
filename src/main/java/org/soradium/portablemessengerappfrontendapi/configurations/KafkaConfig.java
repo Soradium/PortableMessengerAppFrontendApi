@@ -175,6 +175,30 @@ public class KafkaConfig {
         return factory;
     }
 
+    @Bean
+    public ConsumerFactory<String, FriendsListFetchResponseDto> consumerFriendListFactory() {
+        JsonDeserializer<FriendsListFetchResponseDto> deserializer =
+                new JsonDeserializer<>(FriendsListFetchResponseDto.class);
+        deserializer.addTrustedPackages("org.soradium.portablemessengerappfrontendapi.dto");
+        deserializer.setUseTypeMapperForKey(false);
+        deserializer.setRemoveTypeHeaders(true);
 
+        return new DefaultKafkaConsumerFactory<>(
+                consumerConfigs(),
+                new StringDeserializer(),
+                deserializer
+        );
+    }
+
+    @Bean
+    public KafkaListenerContainerFactory<?> kafkaListenerFriendListContainerFactory() {
+        ConcurrentKafkaListenerContainerFactory<String, FriendsListFetchResponseDto>
+                factory = new ConcurrentKafkaListenerContainerFactory<>();
+        factory.setBatchListener(true);
+        factory.setConsumerFactory(consumerFriendListFactory());
+        factory.setBatchMessageConverter(
+                new BatchMessagingMessageConverter(jsonConverter()));
+        return factory;
+    }
 
 }

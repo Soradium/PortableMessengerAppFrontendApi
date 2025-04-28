@@ -33,7 +33,7 @@ public class FriendsController {
 
     @PostMapping("/add-friend")
     public ResponseEntity<String> addFriend(
-            @RequestBody String friendUsername,
+            @RequestBody FriendName friendUsername,
             Principal principal) {
 
         if (friendUsername == null) {
@@ -42,14 +42,14 @@ public class FriendsController {
         }
 
         String senderUserName = principal.getName();
-        if (friendUsername.equals(senderUserName)) {
+        if (friendUsername.username().equals(senderUserName)) {
             return new ResponseEntity<>("You can't add yourself.",
                     HttpStatus.BAD_REQUEST);
         }
         this.kafkaTemplate.send(
                 "friend-add",
                 new FriendRequestSenderAndReceiverDto(
-                        senderUserName, friendUsername)
+                        senderUserName, friendUsername.username())
         );
         return new ResponseEntity<>("Request sent!", HttpStatus.OK);
     }
@@ -66,5 +66,9 @@ public class FriendsController {
                 response.response()
         );
     }
+
+
+
+    public record FriendName(String username) {}
 
 }

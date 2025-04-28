@@ -1,8 +1,6 @@
 package org.soradium.portablemessengerappfrontendapi.controller;
 
-import org.soradium.portablemessengerappfrontendapi.dto.FriendFetchResponseDto;
-import org.soradium.portablemessengerappfrontendapi.dto.UserChatTargetRequestDto;
-import org.soradium.portablemessengerappfrontendapi.dto.UserRequesterAndUserRequestedToDto;
+import org.soradium.portablemessengerappfrontendapi.dto.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,9 +13,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.security.Principal;
+import java.util.List;
 
 @RestController
-@RequestMapping("/chat")
+@RequestMapping("/sidebar")
 public class SidebarUiController {
 
     private final KafkaTemplate<String, Object> kafkaTemplate;
@@ -67,6 +66,31 @@ public class SidebarUiController {
                 response
         );
     }
+
+    @PostMapping("/fetch-friends")
+    public ResponseEntity<?>getAllFriendsRequest(Principal principal) {
+        kafkaTemplate.send(
+                "friendlist-fetch-send",
+                new UsernameAsObjectDto(principal.getName())
+        );
+        return new ResponseEntity<>(
+                "Sent the friend list fetch request",
+                HttpStatus.OK);
+    }
+
+    @KafkaListener(
+            id = "friendlist_fetch_response",
+            topics = "friendlist-fetch-response",
+            containerFactory = "kafkaListenerFriendListContainerFactory"
+    )
+    public void getAllFriendsResponse(FriendsListFetchResponseDto friendsList) {
+        stompTemplate.convertAndSendToUser(
+                friendsList.usernameRequester(),
+                "/topics/friendlist-fetch-response",
+                friendsList.friendUsernames()
+        );
+    }
+
 }
 
 

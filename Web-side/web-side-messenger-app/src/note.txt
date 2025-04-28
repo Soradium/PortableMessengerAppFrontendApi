@@ -1,0 +1,71 @@
+What do I have as ready: 
+
+/// Chat box component:"
+
+//     const [messages, setMessages] = useState([]);
+//     const [message, setMessage] = useState('');
+//     const chatContainerRef = useRef(null);
+// 
+//      topic: `/user/topics/messages-topic`,
+//      callback: (parsedMessage) => {
+//     if (Array.isArray(parsedMessage)) {
+//         setMessages(parsedMessage);
+//     } else if (parsedMessage.message) {
+//         setMessages((prevMessages) => [...prevMessages, parsedMessage]);
+//     } else {
+//         console.error('Unexpected message format:', parsedMessage);
+//     }
+// }
+const handleSendMessage = async () => {
+        console.log('Sending message:', message);
+        if (client && targetUserName && message) {
+            const sentMessage = {
+                targetUserName: targetUserName,
+                message: message,
+            };
+            console.log('Sending message s:', sentMessage);
+            try {
+                const response = await apiClient.post('/chat/send-message', sentMessage);
+                console.log('Message sent:', response.data);
+
+                setMessages((prevMessages) => [...prevMessages, sentMessage]);
+                setMessage('');
+            } catch (error) {
+                console.error('Error sending message:', error);
+            }
+        } else {
+            console.error('Client not connected or missing fields');
+        }
+}"
+
+/// FriendList menu component : "
+
+//     const [friends, setFriends] = useState([]);
+//      topic: '/user/topics/friendlist-fetch-response',
+//      callback: (friendList) => {
+//     setFriends(friendList);
+//      }
+////  const fetchFriends = async () => {
+            try {
+                const response = await apiClient.post('/sidebar/fetch-friends');
+                console.log('Sent friend list fetch request:', response.data);
+            } catch (error) {
+                console.error('Error fetching friends:', error);
+            }
+        };"
+
+/// Sidebar UI component:"
+
+//  topic: '/user/topics/fetch-friend',
+//  callback: (parsedResponse) => {
+//     setFetchResponse(parsedResponse.response);
+//     console.log('Parsed response:', parsedResponse.response);
+
+//     if (parsedResponse.response === "Success") {
+//         setOpenedInChat(formData.targetName);
+//     } else {
+//         alert("Target user not found or unavailable.");
+//     }
+// }
+
+"
