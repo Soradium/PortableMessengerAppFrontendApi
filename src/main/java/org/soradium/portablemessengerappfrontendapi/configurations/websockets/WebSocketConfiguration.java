@@ -14,22 +14,15 @@ public class WebSocketConfiguration implements WebSocketMessageBrokerConfigurer 
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        // /portfolio is the HTTP URL for the endpoint to which a WebSocket (or SockJS)
-        // client needs to connect for the WebSocket handshake
         registry.addEndpoint("/my-endpoint")
-                .setAllowedOrigins("http://localhost:3000");
+                .setAllowedOrigins("http://localhost:3000").withSockJS();
     }
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
-        // STOMP messages whose destination header begins with /app are routed to
-        // @MessageMapping methods in @Controller classes
         config.setApplicationDestinationPrefixes("/app");
-        // Use the built-in message broker for subscriptions and broadcasting and
-        // route messages whose destination header begins with /topic or /queue to the broker
         config.enableSimpleBroker("/topics", "/queue");
     }
-
 
     @Bean
     public ServletServerContainerFactoryBean createWebSocketContainer() {
